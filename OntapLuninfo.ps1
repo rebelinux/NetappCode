@@ -1,7 +1,9 @@
 Import-Module dataontap
+$cluster = "changeme"
+$vserver = "changeme"
 
 #Connect to Ontap Storage
-Connect-NcController -Name <cluster> -Vserver <vserver>
+Connect-NcController -Name $cluster -Vserver $vserver
 
 #Get the list of LUNs
 $luntable = Get-NcLun | Select-Object Path -ExpandProperty Path
@@ -41,7 +43,7 @@ function get-luninfo {
       $obj | add-member -MemberType NoteProperty -Name "Lun Path" -Value $lunpath
       #$obj | add-member -MemberType NoteProperty -Name "Initiator Info" -Value $initiatoronline
  
-      Write-Output $obj | FT
+      Write-Output $obj | Format-Table
       Write-Output $initiatoronline
 
   }
@@ -51,7 +53,7 @@ function get-luninfo {
       $obj | add-member -MemberType NoteProperty -Name "vServer" -Value $vserver
       $obj | add-member -MemberType NoteProperty -Name "Lun Path" -Value $lunpath
       $obj | add-member -MemberType NoteProperty -Name "Lun Mapping" -Value "Lun Not Mapped"
-      Write-Output $obj | FT -Wrap -AutoSize
+      Write-Output $obj | Format-Table -Wrap -AutoSize
   }
 }
 
