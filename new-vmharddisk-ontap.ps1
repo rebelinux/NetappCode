@@ -34,3 +34,18 @@ foreach ($VM in $VMs) {
     }
 }
 
+
+
+$NewVM = get-vm cluster1-01
+$VMs = get-vm cluster1-02 
+$disk = get-vm $VMS | Get-HardDisk | Where-Object StorageFormat -eq EagerZeroedThick |  Where-Object {$_.ExtensionData.ControllerKey -eq 1000}
+ForEach ($disks in $disk) {
+    $scsi = get-vm $NewVM | Get-ScsiController
+    if ($scsi.Name -notcontains "SCSI controller 1"){ 
+        New-HardDisk -VM $NewVM -DiskPath $disks.Filename -| New-ScsiController -Type VirtualLsiLogicSAS -BusSharingMode Virtual
+    }
+    else {
+        Write-Host "Scsi Adapter Found in VM adding existing disks"
+        New-HardDisk -VM $NewVM -DiskPath $disks.Filename -Controller "SCSI controller 1" -Confirm:$false
+    }
+}
